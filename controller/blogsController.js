@@ -228,70 +228,15 @@ const deleteBlog = async (req, res) => {
 const getUserBlogs = async (req, res) => {
   try {
     const userId = req.user._id;
-    const {
-      state,
-      search = '',
-      page = 1,
-      limit = 20,
-      sortBy = 'timestamp',
-      order = 'desc',
-    } = req.query;
-
-    // Validate sortBy field
-    const validSortFields = ['read_count', 'reading_time', 'timestamp'];
-    if (!validSortFields.includes(sortBy)) {
-      return res.status(400).json({
-        message: `Invalid sortBy field. Use one of: ${validSortFields.join(', ')}`,
-      });
-    }
-
-    // Map 'timestamp' to 'createdAt' for sorting
-    const sortField = sortBy === 'timestamp' ? 'createdAt' : sortBy;
-    const sortOrder = order === 'asc' ? 1 : -1;
-
-    // Build base query
-    const query = { author: userId };
-    if (state) query.state = state;
-
-    // Add search conditions if search is provided
-    if (search.trim() !== '') {
-      const searchRegex = new RegExp(search, 'i');
-      query.$or = [
-        { title: { $regex: searchRegex } },
-        { tags: { $in: [searchRegex] } },
-      ];
-      // Note: Author is always userId here, so no need to search author names.
-    }
-
-    // Pagination calculations
-    const pageNumber = parseInt(page, 10);
-    const pageSize = parseInt(limit, 10);
-    const skip = (pageNumber - 1) * pageSize;
-
-    // Sorting options
-    const sortOptions = {};
-    sortOptions[sortField] = sortOrder;
-
-    // Query blogs
-    const blogs = await Blogs.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(pageSize);
-
-    const total = await Blogs.countDocuments(query);
-
+    console.log(userId)
+    // Fetch all blogs for this user
+    const blogs = await Blogs.find({ author: userId });
+console.log({blogs})
     res.status(200).json({
       message: 'Your blogs retrieved successfully',
-      totalBlogs: total,
-      currentPage: pageNumber,
-      totalPages: Math.ceil(total / pageSize),
-      pageSize,
-      sortBy,
-      order,
-      search,
+      totalBlogs: blogs.length,
       data: blogs,
     });
-
   } catch (error) {
     res.status(500).json({
       message: 'Internal server error',
@@ -299,6 +244,7 @@ const getUserBlogs = async (req, res) => {
     });
   }
 };
+
 
 
 

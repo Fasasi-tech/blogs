@@ -130,7 +130,7 @@ const forgotPassword = async (req, res)=>{
 
         await user.save({validateBeforeSave:false})
 
-        const resetUrl=`${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`
+        const resetUrl=`https://blogs-1sl1.onrender.com/api/v1/auth/resetPassword/${resetToken}`
 
          const sent_to = user.email;
      const sent_from = process.env.EMAIL_USER;

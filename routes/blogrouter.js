@@ -8,13 +8,15 @@ const blogController = require('../controller/blogsController')
 
 //public routes
 router.get('/', blogController.AllBlogsExternal)
-router.get('/:id', blogController.singleBlogs)
+
 
 //protected routes
 // The owner of the blog should be able to get a list of their blogs.
-router.get('/my-blog', AuthorizeUser, authController.verifyUserStatus, restrict('admin', 'user'), blogController.getUserBlogs)
+router.get('/myblog', AuthorizeUser, authController.verifyUserStatus, restrict('admin', 'user'), blogController.getUserBlogs)
 router.post('/', AuthorizeUser, authController.verifyUserStatus, restrict('admin', 'user'), blogController.createBlog )
 //The owner of the blog should be able to update the state of the blog to published
+
+router.get('/:id', blogController.singleBlogs)
 router.patch('/edit/:id', AuthorizeUser, authController.verifyUserStatus, restrict('user', 'admin'), blogController.editBlog)
 //delete blog
 router.delete('/:id', AuthorizeUser,authController.verifyUserStatus, restrict('admin', 'user'), blogController.deleteBlog )
